@@ -28,3 +28,39 @@
 /** TODO: Create separate styles for .primary and .secondary variants of this button:
 * - Must use the CSS variables declared in App.css
 */
+
+/* Primary button variant */
+.primary {
+  background-color: var(--color-brand);
+  border: 2px solid var(--color-brand);
+  padding: 0.75rem 1.5rem;
+}
+
+.primary:hover {
+  background-color: var(--color-brand);
+  opacity: 0.9;
+}
+
+.primary:active {
+  background-color: var(--color-brand);
+  opacity: 0.8;
+}
+
+/* Secondary button variant */
+.secondary {
+  background-color: transparent;
+  border: 2px solid var(--color-brand);
+  color: var(--color-brand);
+  padding: 0.75rem 1.5rem;
+}
+
+.secondary:hover {
+  background-color: var(--color-brand);
+  color: #fff;
+}
+
+.secondary:active {
+  background-color: var(--color-brand);
+  color: #fff;
+  opacity: 0.8;
+}
