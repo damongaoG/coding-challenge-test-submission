@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Address from "@/components/Address/Address";
 import AddressBook from "@/components/AddressBook/AddressBook";
@@ -11,6 +11,7 @@ import useAddressBook from "@/hooks/useAddressBook";
 import styles from "./App.module.css";
 import { Address as AddressType } from "./types";
 import useFormFields from "@/hooks/useFormFields";
+import transformAddress from "./core/models/address";
 
 function App() {
   /**
@@ -34,6 +35,7 @@ function App() {
    */
   const [error, setError] = React.useState<undefined | string>(undefined);
   const [addresses, setAddresses] = React.useState<AddressType[]>([]);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
 
   /**
    * Redux actions
@@ -51,6 +53,49 @@ function App() {
    */
   const handleAddressSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Clear previous search results and errors
+    setAddresses([]);
+    setError(undefined);
+
+    if (!values.postCode || !values.houseNumber) {
+      setError("Postcode and house number are required!");
+      return;
+    }
+
+    setIsLoadingAddresses(true);
+
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_URL;
+      const url = `${baseUrl}/api/getAddresses?postcode=${encodeURIComponent(
+        values.postCode
+      )}&streetnumber=${encodeURIComponent(values.houseNumber)}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.errormessage || "Failed to fetch addresses");
+        return;
+      }
+
+      if (data.status === "ok" && data.details) {
+        const transformedAddresses = data.details.map((rawAddress: any) =>
+          transformAddress({
+            ...rawAddress,
+            houseNumber: values.houseNumber, // Add the searched house number to each address
+          })
+        );
+        setAddresses(transformedAddresses);
+      } else {
+        setError(data.errormessage || "No addresses found");
+      }
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+      setError("Failed to fetch addresses. Please try again.");
+    } finally {
+      setIsLoadingAddresses(false);
+    }
   };
 
   /** TODO: Add basic validation to ensure first name and last name fields aren't empty
@@ -58,6 +103,11 @@ function App() {
    */
   const handlePersonSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!values.firstName || !values.lastName) {
+      setError("First name and last name fields mandatory!");
+      return;
+    }
 
     if (!values.selectedAddress || !addresses.length) {
       setError(
@@ -80,6 +130,11 @@ function App() {
       firstName: values.firstName,
       lastName: values.lastName,
     });
+
+    // Clear form and error state
+    setError(undefined);
+    handlers.reset();
+    setAddresses([]);
   };
 
   return (
@@ -112,7 +167,9 @@ function App() {
                 placeholder="House number"
               />
             </div>
-            <Button type="submit">Find</Button>
+            <Button type="submit" loading={isLoadingAddresses}>
+              Find
+            </Button>
           </fieldset>
         </form>
         {addresses.length > 0 &&
@@ -157,8 +214,8 @@ function App() {
         {/* TODO: Create an <ErrorMessage /> component for displaying an error message */}
         {error && <div className="error">{error}</div>}
 
-        {/* TODO: Add a button to clear all form fields. 
-        Button must look different from the default primary button, see design. 
+        {/* TODO: Add a button to clear all form fields.
+        Button must look different from the default primary button, see design.
         Button text name must be "Clear all fields"
         On Click, it must clear all form fields, remove all search results and clear all prior
         error messages
