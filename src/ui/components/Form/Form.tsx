@@ -1,48 +1,32 @@
-import React, { FunctionComponent } from 'react';
-
-import Button from '../Button/Button';
-import InputText from '../InputText/InputText';
-import $ from './Form.module.css';
-
-interface FormEntry {
-  name: string;
-  placeholder: string;
-  // TODO: Defined a suitable type for extra props
-  // This type should cover all different of attribute types
-  extraProps: any;
-}
+import React, { FormEvent, FunctionComponent, ReactNode } from 'react';
+import Button from "../Button/Button";
+import { ButtonVariant } from "@/types";
 
 interface FormProps {
-  label: string;
-  loading: boolean;
-  formEntries: FormEntry[];
-  onFormSubmit: () => void;
+  legend: string;
   submitText: string;
+  loading?: boolean;
+  buttonVariant?: ButtonVariant;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  children: ReactNode;
+  className?: string;
 }
 
 const Form: FunctionComponent<FormProps> = ({
-  label,
-  loading,
-  formEntries,
-  onFormSubmit,
-  submitText
+  legend,
+  submitText,
+  loading = false,
+  buttonVariant = "primary",
+  onSubmit,
+  children,
+  className = "",
 }) => {
   return (
-    <form onSubmit={onFormSubmit}>
+    <form onSubmit={onSubmit} className={className}>
       <fieldset>
-        <legend>{label}</legend>
-        {formEntries.map(({ name, placeholder, extraProps }, index) => (
-          <div key={`${name}-${index}`} className={$.formRow}>
-            <InputText
-              key={`${name}-${index}`}
-              name={name}
-              placeholder={placeholder}
-              {...extraProps}
-            />
-          </div>
-        ))}
-
-        <Button loading={loading} type="submit">
+        <legend>{legend}</legend>
+        {children}
+        <Button type="submit" loading={loading} variant={buttonVariant}>
           {submitText}
         </Button>
       </fieldset>

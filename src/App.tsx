@@ -12,6 +12,7 @@ import styles from "./App.module.css";
 import { Address as AddressType } from "./types";
 import useFormFields from "@/hooks/useFormFields";
 import transformAddress from "./core/models/address";
+import Form from "@/components/Form/Form";
 
 function App() {
   /**
@@ -51,7 +52,7 @@ function App() {
    * - Ensure to clear previous search results on each click
    * - Bonus: Add a loading state in the UI while fetching addresses
    */
-  const handleAddressSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleAddressSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Clear previous search results and errors
@@ -101,7 +102,7 @@ function App() {
   /** TODO: Add basic validation to ensure first name and last name fields aren't empty
    * Use the following error message setError("First name and last name fields mandatory!")
    */
-  const handlePersonSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handlePersonSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!values.firstName || !values.lastName) {
@@ -148,30 +149,29 @@ function App() {
           </small>
         </h1>
         {/* TODO: Create generic <Form /> component to display form rows, legend and a submit button  */}
-        <form onSubmit={handleAddressSubmit}>
-          <fieldset>
-            <legend>🏠 Find an address</legend>
-            <div className={styles.formRow}>
-              <InputText
-                name="postCode"
-                onChange={handlers.handleChange("postCode")}
-                placeholder="Post Code"
-                value={values.postCode}
-              />
-            </div>
-            <div className={styles.formRow}>
-              <InputText
-                name="houseNumber"
-                onChange={handlers.handleChange("houseNumber")}
-                value={values.houseNumber}
-                placeholder="House number"
-              />
-            </div>
-            <Button type="submit" loading={isLoadingAddresses}>
-              Find
-            </Button>
-          </fieldset>
-        </form>
+        <Form
+          legend="🏠 Find an address"
+          submitText="Find"
+          loading={isLoadingAddresses}
+          onSubmit={handleAddressSubmit}
+        >
+          <div className={styles.formRow}>
+            <InputText
+              name="postCode"
+              onChange={handlers.handleChange("postCode")}
+              placeholder="Post Code"
+              value={values.postCode}
+            />
+          </div>
+          <div className={styles.formRow}>
+            <InputText
+              name="houseNumber"
+              onChange={handlers.handleChange("houseNumber")}
+              value={values.houseNumber}
+              placeholder="House number"
+            />
+          </div>
+        </Form>
         {addresses.length > 0 &&
           addresses.map((address) => {
             return (
@@ -187,28 +187,28 @@ function App() {
           })}
         {/* TODO: Create generic <Form /> component to display form rows, legend and a submit button  */}
         {values.selectedAddress && (
-          <form onSubmit={handlePersonSubmit}>
-            <fieldset>
-              <legend>✏️ Add personal info to address</legend>
-              <div className={styles.formRow}>
-                <InputText
-                  name="firstName"
-                  placeholder="First name"
-                  onChange={handlers.handleChange("firstName")}
-                  value={values.firstName}
-                />
-              </div>
-              <div className={styles.formRow}>
-                <InputText
-                  name="lastName"
-                  placeholder="Last name"
-                  onChange={handlers.handleChange("lastName")}
-                  value={values.lastName}
-                />
-              </div>
-              <Button type="submit">Add to addressbook</Button>
-            </fieldset>
-          </form>
+          <Form
+            legend="✏️ Add personal info to address"
+            submitText="Add to addressbook"
+            onSubmit={handlePersonSubmit}
+          >
+            <div className={styles.formRow}>
+              <InputText
+                name="firstName"
+                placeholder="First name"
+                onChange={handlers.handleChange("firstName")}
+                value={values.firstName}
+              />
+            </div>
+            <div className={styles.formRow}>
+              <InputText
+                name="lastName"
+                placeholder="Last name"
+                onChange={handlers.handleChange("lastName")}
+                value={values.lastName}
+              />
+            </div>
+          </Form>
         )}
 
         {/* TODO: Create an <ErrorMessage /> component for displaying an error message */}
