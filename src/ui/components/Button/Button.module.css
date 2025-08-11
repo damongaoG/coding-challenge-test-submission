@@ -3,13 +3,18 @@
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   color: white;
   cursor: pointer;
-  font-size: 0.9em;
+  font-size: 0.85em;
   font-weight: bold;
   max-width: var(--width-input);
-  padding: 0.5em 1em;
-  margin: 0.5em 0;
   transition: transform 0.1s ease;
   width: 100%;
+}
+
+/* Responsive button sizing */
+@media (min-width: 768px) {
+  .button {
+    font-size: 0.9em;
+  }
 }
 
 .button:hover {

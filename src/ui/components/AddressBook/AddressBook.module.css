@@ -7,12 +7,27 @@
 .remove {
   --color-brand: var(--color-accent);
   margin-left: auto;
+  align-self: flex-end;
+}
+
+/* Responsive remove button */
+@media (min-width: 768px) {
+  .remove {
+    align-self: center;
+  }
 }
 
 .item {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+/* Responsive item layout */
+@media (min-width: 768px) {
+  .item {
+    align-items: center;
+    flex-direction: row;
+  }
 }
 
 .item address {
