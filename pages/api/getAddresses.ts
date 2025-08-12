@@ -1,6 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-
 import generateMockAddresses from "../../src/utils/generateMockAddresses";
+
+interface ValidationRule {
+  field: string;
+  value: string;
+  displayName: string;
+  errorMessage: string;
+}
+
+interface ValidationResult {
+  isValid: boolean;
+  errorResponse?: {
+    status: "error";
+    errorMessage: string;
+  };
+}
 
 export default async function handle(
   req: NextApiRequest,
@@ -34,18 +48,48 @@ export default async function handle(
   };
 
   /** TODO: Refactor the code below so there is no duplication of logic for postCode/streetNumber digit checks. */
-  if (!isStrictlyNumeric(postcode as string)) {
-    return res.status(400).send({
-      status: "error",
-      errormessage: "Postcode must be all digits and non negative!",
-    });
-  }
 
-  if (!isStrictlyNumeric(streetnumber as string)) {
-    return res.status(400).send({
-      status: "error",
-      errormessage: "Street Number must be all digits and non negative!",
-    });
+  /**
+   * Numeric validation function
+   * @param rule - Validation rule
+   * @returns Validation result with error response if invalid
+   */
+  const validateNumericField = (rule: ValidationRule): ValidationResult => {
+    if (!isStrictlyNumeric(rule.value)) {
+      return {
+        isValid: false,
+        errorResponse: {
+          status: "error",
+          errorMessage: rule.errorMessage,
+        },
+      };
+    }
+    return {
+      isValid: true,
+    };
+  };
+
+  const numericValidations: ValidationRule[] = [
+    {
+      field: "postcode",
+      value: postcode as string,
+      displayName: "Postcode",
+      errorMessage: "Postcode must be all digits and non negative!",
+    },
+    {
+      field: "streetnumber",
+      value: streetnumber as string,
+      displayName: "Street Number",
+      errorMessage: "Street Number must be all digits and non negative!",
+    },
+  ];
+
+  // Validate all numeric fields
+  for (const rule of numericValidations) {
+    const result = validateNumericField(rule);
+    if (!result.isValid) {
+      return res.status(400).send(result.errorResponse);
+    }
   }
 
   const mockAddresses = generateMockAddresses(
