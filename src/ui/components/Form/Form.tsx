@@ -1,6 +1,7 @@
 import React, { FormEvent, FunctionComponent, ReactNode } from 'react';
 import Button from "../Button/Button";
 import { ButtonVariant } from "@/types";
+import { FormExtraProps } from 'src/types/form';
 
 interface FormProps {
   legend: string;
@@ -10,6 +11,8 @@ interface FormProps {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   children: ReactNode;
   className?: string;
+
+  extraProps?: FormExtraProps;
 }
 
 const Form: FunctionComponent<FormProps> = ({
@@ -20,9 +23,10 @@ const Form: FunctionComponent<FormProps> = ({
   onSubmit,
   children,
   className = "",
+  extraProps = {}, // Default to empty object
 }) => {
   return (
-    <form onSubmit={onSubmit} className={className}>
+    <form onSubmit={onSubmit} className={className} {...extraProps}>
       <fieldset>
         <legend>{legend}</legend>
         {children}
