@@ -13,6 +13,7 @@ import { Address as AddressType } from "./types";
 import useFormFields from "@/hooks/useFormFields";
 import transformAddress from "./core/models/address";
 import Form from "@/components/Form/Form";
+import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 
 function App() {
   /**
@@ -212,7 +213,7 @@ function App() {
         )}
 
         {/* TODO: Create an <ErrorMessage /> component for displaying an error message */}
-        {error && <div className="error">{error}</div>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
 
         {/* TODO: Add a button to clear all form fields.
         Button must look different from the default primary button, see design.
