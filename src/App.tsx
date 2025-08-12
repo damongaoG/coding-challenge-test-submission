@@ -75,9 +75,10 @@ function App() {
 
       const response = await fetch(url);
       const data = await response.json();
+      console.log('response', data);
 
       if (!response.ok) {
-        setError(data.errormessage || "Failed to fetch addresses");
+        setError(data.errorMessage || "Failed to fetch addresses");
         return;
       }
 
@@ -90,7 +91,7 @@ function App() {
         );
         setAddresses(transformedAddresses);
       } else {
-        setError(data.errormessage || "No addresses found");
+        setError(data.errorMessage || "No addresses found");
       }
     } catch (error) {
       console.error("Error fetching addresses:", error);
